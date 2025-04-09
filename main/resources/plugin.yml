@@ -1,0 +1,19 @@
+name: dotdonuts_tab
+version: '${project.version}'
+main: senntools.dotdonuts_tab.Dotdonuts_tab
+api-version: '1.21'
+depend:
+  - TAB
+
+commands:
+  setdonation:
+    description: Used to set user donation to certain value.
+    usage: /<command>
+
+  mydonation:
+    description: Used to get user donation amount.
+    usage: /<command>
+
+  star:
+    description: Used to set you star on/off.
+    usage: /<command> [tab/nick] [on/off]
