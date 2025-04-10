@@ -8,7 +8,9 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.RemoteConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.Permission;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
@@ -21,7 +23,7 @@ public class setdonation implements CommandExecutor{
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
-        if(sender != Bukkit.getConsoleSender()){sender.sendMessage(ChatColor.RED+"This command can only be used by console!"+ChatColor.RESET); return true;}
+        if(!(sender instanceof RemoteConsoleCommandSender)){sender.sendMessage(ChatColor.RED+"This command can only be used by RCON." + ChatColor.RESET); return true;}
 
         String name = args[0];
         int amount;
@@ -53,6 +55,7 @@ public class setdonation implements CommandExecutor{
         PersistentDataContainer container = player.getPersistentDataContainer();
         container.set(key, PersistentDataType.INTEGER, amount);
 
+        plugin.eventmanager.updateGroup(player); // обновление от версии 1.1
         sender.sendMessage("Done! new " + name + "`s donation is " + amount + ".");
         return true;
     }

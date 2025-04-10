@@ -47,18 +47,35 @@ public class EventManager { // используется чтоб не срать
 
         for(String group: l){
 
-            int min, max;
+            int min=0, max=0;
             try{
-                min = Integer.parseInt(group.split(":")[0].split("-")[0]);
-                max = Integer.parseInt(group.split(":")[0].split("-")[1]);
+                String[] tokens = group.split(":")[0].split("-");
+                System.out.println(tokens.length);
+
+                if(tokens.length == 1){
+                    min = Integer.parseInt(tokens[0]);
+                    max = Integer.MAX_VALUE;
+                    System.out.println("test");
+                }
+                else if(tokens.length == 2){
+                    min = Integer.parseInt(group.split(":")[0].split("-")[0]);
+                    max = Integer.parseInt(group.split(":")[0].split("-")[1]);
+                    System.out.println("test1");
+                }
+                else{
+                    System.err.println("Cannot process group " + group + "; invalid format detected."); // фикс от версии 1.1
+                }
             }catch(NumberFormatException e){System.err.println("invalid group info, please check your config."); return null;}
 
             if(balance >= min && balance <= max){
                 return group.split(":")[1] + "★ " + ChatColor.RESET;
             }
+            else{
+                continue;
+            }
         }
 
-        return null;
+        return "";
     }
 
     private BoolPair getTabAndNameStates(Player player){ // возвращает пару булевских значений, которые отвечают аз включение / выключение донатерской звезды в нике и табе соответственно.

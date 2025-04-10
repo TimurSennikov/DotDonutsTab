@@ -49,8 +49,11 @@ public class star implements CommandExecutor{
         NamespacedKey tab = new NamespacedKey(this.plugin, "tabstar");
         NamespacedKey nick = new NamespacedKey(this.plugin, "nickstar");
 
-        Boolean t = container.get(tab, PersistentDataType.BOOLEAN);
-        Boolean n = container.get(nick, PersistentDataType.BOOLEAN);
+        Boolean t = true;
+        Boolean n = true;
+
+        if(container.has(nick, PersistentDataType.BOOLEAN)){container.get(nick, PersistentDataType.BOOLEAN);}
+        if(container.has(tab, PersistentDataType.BOOLEAN)){container.get(tab, PersistentDataType.BOOLEAN);} // фикс от версии 1.1
 
         sender.sendMessage(ChatColor.AQUA + "Звезда в меню ТАБ: " + (t ? (ChatColor.GREEN + "включена") : (ChatColor.RED + "выключена")) + ChatColor.AQUA + "; Звезда перед ником: " + (n ? (ChatColor.GREEN + "включена") : (ChatColor.RED + "выключена")) + ".");
     }
