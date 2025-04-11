@@ -37,7 +37,7 @@ public class EventManager { // используется чтоб не срать
     }
 
     private String getPlayerPrefix(Player player){
-        NamespacedKey key = new NamespacedKey(plugin, "dotdonuts");
+        NamespacedKey key = new NamespacedKey(plugin, "dotdonuts"), color = new NamespacedKey(plugin, "starcolor");
         PersistentDataContainer container = player.getPersistentDataContainer();
 
         List<String> l = plugin.reader.getDonateGroups();
@@ -46,29 +46,16 @@ public class EventManager { // используется чтоб не срать
         if(balance == null){System.err.println("balance is null."); return null;}
 
         for(String group: l){
+            Pair<Integer, Integer> minmax = ConfigEntryFormatter.getMinMax(group);
+            if(minmax == null){System.err.println("minmax is null. (EventManager)"); return "";}
 
-            int min=0, max=0;
-            try{
-                String[] tokens = group.split(":")[0].split("-");
-                System.out.println(tokens.length);
+            if(balance >= minmax.getFirst() && balance <= minmax.getSecond()){
+                String col = container.get(color, PersistentDataType.STRING);
+                if(col == null || col.equals("DEFAULT")){
+                    col = group.split(":")[1];
+                }
 
-                if(tokens.length == 1){
-                    min = Integer.parseInt(tokens[0]);
-                    max = Integer.MAX_VALUE;
-                    System.out.println("test");
-                }
-                else if(tokens.length == 2){
-                    min = Integer.parseInt(group.split(":")[0].split("-")[0]);
-                    max = Integer.parseInt(group.split(":")[0].split("-")[1]);
-                    System.out.println("test1");
-                }
-                else{
-                    System.err.println("Cannot process group " + group + "; invalid format detected."); // фикс от версии 1.1
-                }
-            }catch(NumberFormatException e){System.err.println("invalid group info, please check your config."); return null;}
-
-            if(balance >= min && balance <= max){
-                return group.split(":")[1] + "★ " + ChatColor.RESET;
+                return col + "★ " + ChatColor.RESET;
             }
             else{
                 continue;
@@ -101,6 +88,27 @@ public class EventManager { // используется чтоб не срать
 
             container.set(key, PersistentDataType.INTEGER, amount);
         }
+    }
+
+    private void setupPlayerFields(Player player){
+        NamespacedKey key=new NamespacedKey(plugin, "dotdonuts"),color=new NamespacedKey(plugin, "starcolor");
+        PersistentDataContainer container = player.getPersistentDataContainer();
+
+        if(!container.has(key, PersistentDataType.INTEGER)){container.set(key, PersistentDataType.INTEGER, 0);}
+        if(!container.has(color, PersistentDataType.STRING)){container.set(color, PersistentDataType.STRING, "DEFAULT");}
+    }
+
+    private void setupPlayerColorProperty(Player player){
+        NamespacedKey key=new NamespacedKey(plugin, "dotdonuts"),color=new NamespacedKey(plugin, "starcolor");
+        PersistentDataContainer container = player.getPersistentDataContainer();
+
+        Integer amount = container.get(key, PersistentDataType.INTEGER);
+        String col = container.get(color, PersistentDataType.STRING);
+        if(col == null || col.equals("DEFAULT")){return;} // цвет не задан.
+        if(amount == null){System.err.println("Error! " + player.getName() + "`s balance is null! (setupPlayerColorProperty)"); return;}
+
+        List<String> availcolors = plugin.reader.getColorsByBalance(amount);
+        if(!availcolors.contains(col)){container.set(color, PersistentDataType.STRING, "DEFAULT");}
     }
 
     private void setupPlayer(Player player){
@@ -137,11 +145,15 @@ public class EventManager { // используется чтоб не срать
     public void playerLoad(PlayerLoadEvent event){
         Player player = (Player)event.getPlayer().getPlayer();
 
+        this.setupPlayerFields(player);
+
         this.processDeferredList(player);
+        this.setupPlayerColorProperty(player);
         this.setupPlayer(player);
     }
 
     void updateGroup(Player player){
+        this.setupPlayerColorProperty(player);
         this.setupPlayer(player);
     }
 }

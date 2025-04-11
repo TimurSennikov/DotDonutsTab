@@ -9,6 +9,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
+import java.util.List;
+
 public class star implements CommandExecutor{
     Dotdonuts_tab plugin;
 
@@ -42,6 +44,30 @@ public class star implements CommandExecutor{
         sender.sendMessage(ChatColor.GREEN + "Теперь перед вашим ником " + (state ? (ChatColor.GREEN + "отображается звезда.") : (ChatColor.DARK_RED + "не отображается звезда.") + ChatColor.RESET));
     }
 
+    private void starColor(CommandSender sender, String[] args){
+        NamespacedKey key = new NamespacedKey(this.plugin, "starcolor");
+        NamespacedKey bal = new NamespacedKey(this.plugin, "dotdonuts");
+
+        PersistentDataContainer container = ((Player)sender).getPersistentDataContainer();
+
+        Integer balance = container.get(bal, PersistentDataType.INTEGER);
+        if(balance == null){
+            System.err.println("Error setting star color: balance is null!");
+            sender.sendMessage("Вы не донатили на сервер.");
+            return;
+        }
+
+        List<String> availcolors = plugin.reader.getColorsByBalance(balance);
+        if(availcolors.contains("§" + args[1])) {
+            container.set(key, PersistentDataType.STRING, "§" + args[1]);
+            sender.sendMessage("Цвет успешно задан!");
+            plugin.eventmanager.updateGroup((Player)sender);
+        }
+        else{
+            sender.sendMessage("Этого цвета либо не существует, либо у вас недостаточно на него донатов.");
+        }
+    }
+
     private void info(CommandSender sender, String[] args){
         Player player = (Player)sender;
 
@@ -49,8 +75,9 @@ public class star implements CommandExecutor{
         NamespacedKey tab = new NamespacedKey(this.plugin, "tabstar");
         NamespacedKey nick = new NamespacedKey(this.plugin, "nickstar");
 
-        Boolean t = true;
-        Boolean n = true;
+        Boolean t=container.get(tab, PersistentDataType.BOOLEAN), n=container.get(nick, PersistentDataType.BOOLEAN);
+        if(t==null){t=true;}
+        if(n==null){n=true;}
 
         if(container.has(nick, PersistentDataType.BOOLEAN)){container.get(nick, PersistentDataType.BOOLEAN);}
         if(container.has(tab, PersistentDataType.BOOLEAN)){container.get(tab, PersistentDataType.BOOLEAN);} // фикс от версии 1.1
@@ -80,6 +107,9 @@ public class star implements CommandExecutor{
         }
         else if(args[0].equalsIgnoreCase("nick")){
             this.nickStar(sender, args);
+        }
+        else if(args[0].equalsIgnoreCase("color")){
+            this.starColor(sender, args);
         }
 
         plugin.eventmanager.updateGroup((Player)sender);

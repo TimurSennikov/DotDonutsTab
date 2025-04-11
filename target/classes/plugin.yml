@@ -1,5 +1,5 @@
 name: dotdonuts_tab
-version: '${project.version}'
+version: '1.0-SNAPSHOT'
 main: senntools.dotdonuts_tab.Dotdonuts_tab
 api-version: '1.21'
 depend:
@@ -17,3 +17,11 @@ commands:
   star:
     description: Used to set you star on/off.
     usage: /<command> [tab/nick] [on/off]
+
+  starcolors:
+    description: Used to display all groups to player.
+    usage: /<command>
+
+  starinfo:
+    description: Used to show plugin inforamtion.
+    usage: /<command>

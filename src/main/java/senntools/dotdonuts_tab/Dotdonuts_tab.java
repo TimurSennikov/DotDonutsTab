@@ -14,14 +14,16 @@ public final class Dotdonuts_tab extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        this.getCommand("setdonation").setExecutor(new setdonation(this));
-        this.getCommand("star").setExecutor(new star(this));
-        this.getCommand("mydonation").setExecutor(new mydonation(this));
-
         this.reader = new ConfigReader(this);
         this.deferredlist = new DeferredList(this);
 
         this.eventmanager = new EventManager(this, this.reader, this.deferredlist);
+
+        this.getCommand("setdonation").setExecutor(new setdonation(this));
+        this.getCommand("star").setExecutor(new star(this));
+        this.getCommand("mydonation").setExecutor(new mydonation(this));
+        this.getCommand("starcolors").setExecutor(new starcolors(this.reader));
+        this.getCommand("starinfo").setExecutor(new starinfo());
 
         System.out.println("Starting up dotdonutstab.");
 
