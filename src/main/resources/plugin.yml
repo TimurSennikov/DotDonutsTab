@@ -25,3 +25,7 @@ commands:
   starinfo:
     description: Used to show plugin inforamtion.
     usage: /<command>
+
+  leaderboard:
+    description: Used to show server leaderboard.
+    usage: /<command>

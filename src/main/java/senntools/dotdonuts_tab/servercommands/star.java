@@ -1,4 +1,4 @@
-package senntools.dotdonuts_tab;
+package senntools.dotdonuts_tab.servercommands;
 
 import org.bukkit.ChatColor;
 import org.bukkit.NamespacedKey;
@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
+import senntools.dotdonuts_tab.Dotdonuts_tab;
 
 import java.util.List;
 
@@ -46,22 +47,16 @@ public class star implements CommandExecutor{
 
     private void starColor(CommandSender sender, String[] args){
         NamespacedKey key = new NamespacedKey(this.plugin, "starcolor");
-        NamespacedKey bal = new NamespacedKey(this.plugin, "dotdonuts");
 
         PersistentDataContainer container = ((Player)sender).getPersistentDataContainer();
 
-        Integer balance = container.get(bal, PersistentDataType.INTEGER);
-        if(balance == null){
-            System.err.println("Error setting star color: balance is null!");
-            sender.sendMessage("Вы не донатили на сервер.");
-            return;
-        }
+        Integer balance = plugin.getBalanceReader().getPlayerBalance((Player)sender);
 
-        List<String> availcolors = plugin.reader.getColorsByBalance(balance);
+        List<String> availcolors = plugin.getReader().getColorsByBalance(balance);
         if(availcolors.contains("§" + args[1])) {
             container.set(key, PersistentDataType.STRING, "§" + args[1]);
             sender.sendMessage("Цвет успешно задан!");
-            plugin.eventmanager.updateGroup((Player)sender);
+            plugin.getEventManager().updateGroup((Player)sender);
         }
         else{
             sender.sendMessage("Этого цвета либо не существует, либо у вас недостаточно на него донатов.");
@@ -85,7 +80,7 @@ public class star implements CommandExecutor{
         sender.sendMessage(ChatColor.AQUA + "Звезда в меню ТАБ: " + (t ? (ChatColor.GREEN + "включена") : (ChatColor.RED + "выключена")) + ChatColor.AQUA + "; Звезда перед ником: " + (n ? (ChatColor.GREEN + "включена") : (ChatColor.RED + "выключена")) + ".");
     }
 
-    // методам сверху кормим два параметра потому что им больше нахуй не нужно
+    // методам сверху кормим два параметра потому что им больше не нужно
 
     public star(Dotdonuts_tab plugin){
         this.plugin = plugin;
@@ -112,7 +107,7 @@ public class star implements CommandExecutor{
             this.starColor(sender, args);
         }
 
-        plugin.eventmanager.updateGroup((Player)sender);
+        plugin.getEventManager().updateGroup((Player)sender);
 
         return true;
     }
